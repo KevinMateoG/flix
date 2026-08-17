@@ -1,24 +1,24 @@
 'use client';
 
-import * as React from "react";
-import { ThumbsDown, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { toggleDislike, checkIfDisliked } from "@/app/actions/dislikes";
+import * as React from 'react';
+import { ThumbsDown, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { toggleDislike, checkIfDisliked } from '@/app/actions/dislikes';
 
 interface DislikeButtonProps {
   profileId: string;
   tmdbId: number;
-  mediaType: "movie" | "tv";
-  variant?: "primary" | "secondary";
-  size?: "default" | "sm" | "lg" | "icon";
+  mediaType: 'movie' | 'tv';
+  variant?: 'primary' | 'secondary';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
 }
 
 export function DislikeButton({
   profileId,
   tmdbId,
   mediaType,
-  variant = "secondary",
-  size = "icon",
+  variant = 'secondary',
+  size = 'icon',
 }: DislikeButtonProps) {
   const [isDisliked, setIsDisliked] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
@@ -37,7 +37,7 @@ export function DislikeButton({
           setLoading(false);
         }
       } catch (err) {
-        console.error("Error checking dislike:", err);
+        console.error('Error checking dislike:', err);
         if (active) setLoading(false);
       }
     }
@@ -55,7 +55,7 @@ export function DislikeButton({
       const res = await toggleDislike({ profileId, tmdbId, mediaType });
       setIsDisliked(res.added);
     } catch (err) {
-      console.error("Error toggling dislike:", err);
+      console.error('Error toggling dislike:', err);
     } finally {
       setToggling(false);
     }
@@ -76,9 +76,9 @@ export function DislikeButton({
       onClick={handleToggle}
       disabled={toggling}
       title="Dislike"
-      className={isDisliked ? "text-primary" : ""}
+      className={isDisliked ? 'text-primary' : ''}
     >
-      <ThumbsDown size={20} className={isDisliked ? "fill-primary" : ""} />
+      <ThumbsDown size={20} className={isDisliked ? 'fill-primary' : ''} />
     </Button>
   );
 }

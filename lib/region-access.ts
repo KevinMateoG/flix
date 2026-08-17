@@ -19,7 +19,7 @@ export async function getUserRegion(): Promise<string> {
 }
 
 export function isDemoModeActive(
-  searchParams: { [key: string]: string | string[] | undefined } | null
+  searchParams: { [key: string]: string | string[] | undefined } | null,
 ): boolean {
   if (!searchParams) return false;
   return searchParams.demoMode === 'all';
@@ -62,7 +62,7 @@ export async function isTitlePlayableInRegion(tmdbId: number, region: string): P
  */
 export async function fetchTmdbDetails(
   tmdbId: number,
-  language?: string
+  language?: string,
 ): Promise<(any & { media_type: 'movie' | 'tv' }) | null> {
   try {
     const movie = await tmdb.movieDetails(tmdbId, language);

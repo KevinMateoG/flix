@@ -5,21 +5,20 @@ import { normalizeLocale } from '@/lib/i18n';
 
 export async function updateProfileRegion(region: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({ region })
-    .eq('id', user.id);
+  const { error } = await supabase.from('profiles').update({ region }).eq('id', user.id);
 
   if (error) throw error;
-  
+
   const cookieStore = await cookies();
-  cookieStore.set('user_region', region, { 
-    path: '/', 
-    maxAge: 2592000, 
-    sameSite: 'lax' 
+  cookieStore.set('user_region', region, {
+    path: '/',
+    maxAge: 2592000,
+    sameSite: 'lax',
   });
 
   return { success: true };
@@ -35,7 +34,9 @@ export async function updateProfileSettings({
   isKids?: boolean;
 }) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const updateFields: any = {};
@@ -43,10 +44,7 @@ export async function updateProfileSettings({
   if (maturityRating !== undefined) updateFields.maturity_rating = maturityRating;
   if (isKids !== undefined) updateFields.is_kids = isKids;
 
-  const { error } = await supabase
-    .from('profiles')
-    .update(updateFields)
-    .eq('id', user.id);
+  const { error } = await supabase.from('profiles').update(updateFields).eq('id', user.id);
 
   if (error) throw error;
   return { success: true };
@@ -54,14 +52,12 @@ export async function updateProfileSettings({
 
 export async function getActiveProfile() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
 
   if (error || !data) return null;
   return data;

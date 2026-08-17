@@ -13,7 +13,7 @@ export async function toggleMyList({
   mediaType: 'movie' | 'tv';
 }) {
   const supabase = await createClient();
-  
+
   const { data: existing } = await supabase
     .from('my_list')
     .select('id')

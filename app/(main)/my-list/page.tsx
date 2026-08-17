@@ -1,15 +1,15 @@
-import { getActiveProfile } from "@/lib/auth";
-import { getMyList } from "@/app/actions/my-list";
-import { tmdb } from "@/lib/tmdb";
-import { MyListCard } from "@/components/movie/MyListCard";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { redirect } from "next/navigation";
-import { getTmdbLanguage } from "@/lib/i18n";
+import { getActiveProfile } from '@/lib/auth';
+import { getMyList } from '@/app/actions/my-list';
+import { tmdb } from '@/lib/tmdb';
+import { MyListCard } from '@/components/movie/MyListCard';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { redirect } from 'next/navigation';
+import { getTmdbLanguage } from '@/lib/i18n';
 
 export default async function MyListPage() {
   const profile = await getActiveProfile();
   if (!profile) {
-    redirect("/login");
+    redirect('/login');
   }
   const language = getTmdbLanguage(profile.language);
 
@@ -17,7 +17,7 @@ export default async function MyListPage() {
   try {
     listItems = await getMyList(profile.id);
   } catch (err) {
-    console.error("Error fetching my list:", err);
+    console.error('Error fetching my list:', err);
   }
 
   // Fetch TMDB details for each saved item in parallel
@@ -25,7 +25,7 @@ export default async function MyListPage() {
     listItems.map(async (item) => {
       try {
         let details;
-        if (item.media_type === "tv") {
+        if (item.media_type === 'tv') {
           details = await tmdb.tvDetails(item.tmdb_id, language);
         } else {
           details = await tmdb.movieDetails(item.tmdb_id, language);
@@ -42,16 +42,14 @@ export default async function MyListPage() {
         console.error(`Error loading TMDB details for watchlist item ${item.tmdb_id}:`, err);
         return null;
       }
-    })
+    }),
   );
 
   const validItems = detailedItems.filter(Boolean);
 
   return (
     <div className="flex flex-col gap-8 px-4 py-6 md:px-12 md:py-10">
-      <h1 className="text-display-lg-mobile md:text-display-lg text-on-background">
-        My List
-      </h1>
+      <h1 className="text-display-lg-mobile md:text-display-lg text-on-background">My List</h1>
 
       {validItems.length === 0 ? (
         <EmptyState
@@ -66,18 +64,18 @@ export default async function MyListPage() {
             const href = `/${item.media_type}/${item.tmdb_id}`;
             const year = item.release_date
               ? new Date(item.release_date).getFullYear().toString()
-              : "";
-            const rating = item.vote_average ? `${item.vote_average.toFixed(1)} ★` : "";
-            const metadata = [year, rating].filter(Boolean).join(" | ");
+              : '';
+            const rating = item.vote_average ? `${item.vote_average.toFixed(1)} ★` : '';
+            const metadata = [year, rating].filter(Boolean).join(' | ');
 
-            const imageUrl = tmdb.image(item.poster_path, "w342");
+            const imageUrl = tmdb.image(item.poster_path, 'w342');
 
             return (
               <MyListCard
                 key={item.id}
                 id={item.id}
                 href={href}
-                title={item.title || "Untitled"}
+                title={item.title || 'Untitled'}
                 metadata={metadata}
                 overview={item.overview}
                 imageUrl={imageUrl || undefined}

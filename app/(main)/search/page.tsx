@@ -21,11 +21,13 @@ export default function SearchPage() {
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}&language=${locale}`);
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(query.trim())}&language=${locale}`,
+        );
         const data = await res.json();
         setResults(data.results || []);
       } catch (err) {
-        console.error("Search fetch failed:", err);
+        console.error('Search fetch failed:', err);
       } finally {
         setLoading(false);
       }
@@ -36,20 +38,26 @@ export default function SearchPage() {
 
   return (
     <div className="px-4 py-6 md:px-12 md:py-10">
-      <h1 className="text-display-lg-mobile md:text-display-lg mb-6 text-on-background">
-        {t("search")}
+      <h1 className="text-display-lg-mobile md:text-display-lg text-on-background mb-6">
+        {t('search')}
       </h1>
-      
-      <div className="flex flex-col gap-2 mb-8">
+
+      <div className="mb-8 flex flex-col gap-2">
         <SearchInput
           value={query}
           onChange={setQuery}
-          placeholder={locale === "es" ? "Busca películas y series..." : locale === "pt" ? "Pesquise filmes e séries..." : "Search movies, TV shows..."}
+          placeholder={
+            locale === 'es'
+              ? 'Busca películas y series...'
+              : locale === 'pt'
+                ? 'Pesquise filmes e séries...'
+                : 'Search movies, TV shows...'
+          }
         />
         {loading && (
-          <div className="flex items-center gap-2 text-sm text-muted mt-2">
-            <Loader2 size={16} className="animate-spin text-primary" />
-            {locale === "es" ? "Buscando..." : locale === "pt" ? "Pesquisando..." : "Searching..."}
+          <div className="text-muted mt-2 flex items-center gap-2 text-sm">
+            <Loader2 size={16} className="text-primary animate-spin" />
+            {locale === 'es' ? 'Buscando...' : locale === 'pt' ? 'Pesquisando...' : 'Searching...'}
           </div>
         )}
       </div>

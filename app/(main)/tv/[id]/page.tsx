@@ -35,7 +35,7 @@ export default async function TVDetailPage({ params, searchParams }: Props) {
       tmdb.providers('tv', Number(id)),
     ]);
   } catch (err) {
-    console.error("Error loading TV detail:", err);
+    console.error('Error loading TV detail:', err);
     notFound();
   }
 
@@ -68,10 +68,7 @@ export default async function TVDetailPage({ params, searchParams }: Props) {
 
       {tv.seasons && tv.seasons.length > 0 && (
         <>
-          <SeasonSelector
-            seasons={tv.seasons}
-            currentSeason={seasonNumber}
-          />
+          <SeasonSelector seasons={tv.seasons} currentSeason={seasonNumber} />
           <EpisodeList
             episodes={seasonData?.episodes || []}
             tmdbId={Number(id)}

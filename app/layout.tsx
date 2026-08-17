@@ -1,15 +1,15 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
 const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+  variable: '--font-inter',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "Flix - Movie Streaming Platform",
-  description: "A premium, distraction-free movie streaming experience.",
+  title: 'Flix - Movie Streaming Platform',
+  description: 'A premium, distraction-free movie streaming experience.',
 };
 
 export default function RootLayout({
@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} antialiased dark`}>
-      <body className="min-h-screen bg-background text-on-background flex flex-col font-sans">
+    <html lang="en" className={`${inter.variable} dark antialiased`}>
+      <body className="bg-background text-on-background flex min-h-screen flex-col font-sans">
         {children}
       </body>
     </html>
