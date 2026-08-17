@@ -34,7 +34,6 @@ export default async function BrowsePage({ searchParams }: Props) {
 
   try {
     if (!isDemo) {
-      // REGION-RESTRICTED: fetch only from playable_content for this region
       const playableContent = await getPlayableMoviesForRegion(region);
 
       const tmdbItems = await Promise.all(
@@ -46,13 +45,11 @@ export default async function BrowsePage({ searchParams }: Props) {
       if (genre === 'all') {
         results = validItems;
       } else {
-        // Filter locally by genre within the allowed set
         results = validItems.filter(item =>
           item.genres?.some((g: any) => g.id.toString() === genre)
         );
       }
     } else {
-      // DEMO MODE — existing full TMDB catalog behavior
       if (genre === 'all') {
         const data = await tmdb.popular('movie', 1, region, language);
         results = data.results || [];
@@ -65,7 +62,6 @@ export default async function BrowsePage({ searchParams }: Props) {
     console.error("Error fetching browse data:", err);
   }
 
-  // Build href helper that preserves demoMode
   const getHref = (base: string) =>
     isDemo ? `${base}${base.includes('?') ? '&' : '?'}demoMode=all` : base;
 

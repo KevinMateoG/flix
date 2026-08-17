@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
     <div className="relative flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
       {/* Background - contained in relative parent */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/3 top-1/3 h-[500px] w-[500px] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute left-1/3 top-1/3 h-125 w-125 rounded-full bg-primary/10 blur-[120px]" />
       </div>
 
       <div className="relative z-10 flex w-full max-w-5xl overflow-hidden rounded-2xl bg-surface shadow-2xl shadow-black/60">

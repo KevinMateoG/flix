@@ -95,7 +95,7 @@ export default function RegisterPage() {
     <div className="relative flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
       {/* Abstract Background Elements - contained within relative parent */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute right-1/4 top-1/4 h-[600px] w-[600px] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute right-1/4 top-1/4 h-150 w-150 rounded-full bg-primary/10 blur-[120px]" />
         <div className="absolute bottom-1/4 left-1/4 h-96 w-96 rounded-full bg-primary/5 blur-[80px]" />
       </div>
       
