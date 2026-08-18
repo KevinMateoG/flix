@@ -7,7 +7,7 @@ async function fetchTMDB(endpoint: string, params: Record<string, string> = {}) 
   const url = new URL(`${BASE}${endpoint}`);
   url.searchParams.set('api_key', KEY);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-  
+
   const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
   if (!res.ok) throw new Error(`TMDB ${res.status}: ${await res.text()}`);
   return res.json();
@@ -15,8 +15,11 @@ async function fetchTMDB(endpoint: string, params: Record<string, string> = {}) 
 
 export const tmdb = {
   // Trending
-  trending: (mediaType: 'movie' | 'tv' | 'all' = 'all', timeWindow: 'day' | 'week' = 'week', language = DEFAULT_LANGUAGE) =>
-    fetchTMDB(`/trending/${mediaType}/${timeWindow}`, { language }),
+  trending: (
+    mediaType: 'movie' | 'tv' | 'all' = 'all',
+    timeWindow: 'day' | 'week' = 'week',
+    language = DEFAULT_LANGUAGE,
+  ) => fetchTMDB(`/trending/${mediaType}/${timeWindow}`, { language }),
 
   // Popular
   popular: (mediaType: 'movie' | 'tv', page = 1, region = 'US', language = DEFAULT_LANGUAGE) =>
@@ -40,10 +43,16 @@ export const tmdb = {
 
   // Details
   movieDetails: (id: number, language = DEFAULT_LANGUAGE) =>
-    fetchTMDB(`/movie/${id}`, { language, append_to_response: 'credits,videos,watch/providers,recommendations' }),
-  
+    fetchTMDB(`/movie/${id}`, {
+      language,
+      append_to_response: 'credits,videos,watch/providers,recommendations',
+    }),
+
   tvDetails: (id: number, language = DEFAULT_LANGUAGE) =>
-    fetchTMDB(`/tv/${id}`, { language, append_to_response: 'credits,videos,watch/providers,recommendations,aggregate_credits' }),
+    fetchTMDB(`/tv/${id}`, {
+      language,
+      append_to_response: 'credits,videos,watch/providers,recommendations,aggregate_credits',
+    }),
 
   // Season/Episode
   seasonDetails: (tvId: number, seasonNumber: number, language = DEFAULT_LANGUAGE) =>
@@ -54,8 +63,10 @@ export const tmdb = {
     fetchTMDB(`/${mediaType}/${id}/watch/providers`, {}),
 
   // Images
-  image: (path: string | null, size: 'w92' | 'w154' | 'w185' | 'w342' | 'w500' | 'w780' | 'original' = 'w500') =>
-    path ? `${IMG}/${size}${path}` : null,
+  image: (
+    path: string | null,
+    size: 'w92' | 'w154' | 'w185' | 'w342' | 'w500' | 'w780' | 'original' = 'w500',
+  ) => (path ? `${IMG}/${size}${path}` : null),
 
   backdrop: (path: string | null, size: 'w300' | 'w780' | 'w1280' | 'original' = 'w1280') =>
     path ? `${IMG}/${size}${path}` : null,

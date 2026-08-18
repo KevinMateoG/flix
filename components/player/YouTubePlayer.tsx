@@ -53,7 +53,9 @@ function loadYouTubeApi(): Promise<YouTubeApi> {
       else reject(new Error('YouTube Player API did not load'));
     };
 
-    const existingScript = document.querySelector<HTMLScriptElement>('script[src*="youtube.com/iframe_api"]');
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[src*="youtube.com/iframe_api"]',
+    );
     if (!existingScript) {
       const script = document.createElement('script');
       script.src = 'https://www.youtube.com/iframe_api';
@@ -195,35 +197,53 @@ export function YouTubePlayerComponent({
         } catch {}
       }
     };
-  }, [videoId, profileId, tmdbId, mediaType, title, posterPath, seasonNumber, episodeNumber, initialTime]);
+  }, [
+    videoId,
+    profileId,
+    tmdbId,
+    mediaType,
+    title,
+    posterPath,
+    seasonNumber,
+    episodeNumber,
+    initialTime,
+  ]);
 
   return (
     <div className="flex h-full w-full flex-col bg-black">
-      <div className="flex items-center gap-3 px-4 py-3 text-on-background md:px-6">
-        <Link href={backUrl} className="rounded p-2 transition-colors hover:bg-white/10" aria-label="Go back">
+      <div className="text-on-background flex items-center gap-3 px-4 py-3 md:px-6">
+        <Link
+          href={backUrl}
+          className="rounded p-2 transition-colors hover:bg-white/10"
+          aria-label="Go back"
+        >
           <ArrowLeft size={24} />
         </Link>
         <p className="text-body-sm font-medium">{title}</p>
       </div>
-      <div className="relative min-h-0 flex-1 w-full h-full">
-        <div ref={containerRef} className="h-full w-full [&>iframe]:h-full [&>iframe]:w-full [&>iframe]:border-0" />
+      <div className="relative h-full min-h-0 w-full flex-1">
+        <div
+          ref={containerRef}
+          className="h-full w-full [&>iframe]:h-full [&>iframe]:w-full [&>iframe]:border-0"
+        />
         {failed && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black p-6 text-center text-body-sm">
+          <div className="text-body-sm absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black p-6 text-center">
             <p className="text-muted max-w-md">
-              This trailer cannot be embedded directly due to YouTube region or video owner playback restrictions.
+              This trailer cannot be embedded directly due to YouTube region or video owner playback
+              restrictions.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
               <a
                 href={`https://www.youtube.com/watch?v=${videoId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full bg-primary px-5 py-2.5 text-body-sm font-semibold text-on-primary hover:opacity-90 transition-opacity"
+                className="bg-primary text-body-sm text-on-primary rounded-full px-5 py-2.5 font-semibold transition-opacity hover:opacity-90"
               >
                 Watch on YouTube ↗
               </a>
               <Link
                 href={backUrl}
-                className="rounded-full bg-surface-container-high px-5 py-2.5 text-body-sm font-medium text-on-surface hover:bg-surface-bright transition-colors"
+                className="bg-surface-container-high text-body-sm text-on-surface hover:bg-surface-bright rounded-full px-5 py-2.5 font-medium transition-colors"
               >
                 Go Back
               </Link>

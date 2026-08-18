@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useEffect } from "react";
-import { getMessages, normalizeLocale, type AppLocale, type TranslationKey } from "@/lib/i18n";
+import { createContext, useContext, useEffect } from 'react';
+import { getMessages, normalizeLocale, type AppLocale, type TranslationKey } from '@/lib/i18n';
 
 type LanguageContextValue = {
   locale: AppLocale;
@@ -9,11 +9,17 @@ type LanguageContextValue = {
 };
 
 const LanguageContext = createContext<LanguageContextValue>({
-  locale: "en",
-  t: (key) => getMessages("en")[key],
+  locale: 'en',
+  t: (key) => getMessages('en')[key],
 });
 
-export function LanguageProvider({ locale, children }: { locale?: string | null; children: React.ReactNode }) {
+export function LanguageProvider({
+  locale,
+  children,
+}: {
+  locale?: string | null;
+  children: React.ReactNode;
+}) {
   const normalizedLocale = normalizeLocale(locale);
   const messages = getMessages(normalizedLocale);
 

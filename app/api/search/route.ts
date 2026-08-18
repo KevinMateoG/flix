@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     if (!q || q.trim().length < 2) {
       return NextResponse.json({ results: [] });
     }
-    
+
     const data = await tmdb.search(q.trim(), 1, language);
     return NextResponse.json(data);
   } catch (error: any) {

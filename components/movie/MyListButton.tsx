@@ -1,24 +1,24 @@
 'use client';
 
-import * as React from "react";
-import { Plus, Check, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { toggleMyList, checkIfInMyList } from "@/app/actions/my-list";
+import * as React from 'react';
+import { Plus, Check, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { toggleMyList, checkIfInMyList } from '@/app/actions/my-list';
 
 interface MyListButtonProps {
   profileId: string;
   tmdbId: number;
-  mediaType: "movie" | "tv";
-  variant?: "primary" | "secondary";
-  size?: "default" | "sm" | "lg" | "icon";
+  mediaType: 'movie' | 'tv';
+  variant?: 'primary' | 'secondary';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
 }
 
 export function MyListButton({
   profileId,
   tmdbId,
   mediaType,
-  variant = "secondary",
-  size = "lg",
+  variant = 'secondary',
+  size = 'lg',
 }: MyListButtonProps) {
   const [isInList, setIsInList] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
@@ -37,7 +37,7 @@ export function MyListButton({
           setLoading(false);
         }
       } catch (err) {
-        console.error("Error checking list:", err);
+        console.error('Error checking list:', err);
         if (active) setLoading(false);
       }
     }
@@ -55,7 +55,7 @@ export function MyListButton({
       const res = await toggleMyList({ profileId, tmdbId, mediaType });
       setIsInList(res.added);
     } catch (err) {
-      console.error("Error toggling list:", err);
+      console.error('Error toggling list:', err);
     } finally {
       setToggling(false);
     }
