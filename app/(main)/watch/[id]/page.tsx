@@ -16,7 +16,7 @@ export default async function WatchPage({ params, searchParams }: Props) {
   const { id: rawPlaybackId } = await params;
   const playbackId = decodeURIComponent(rawPlaybackId);
   const { tmdbId, type, season, episode } = await searchParams;
-  
+
   const profile = await getActiveProfile();
   if (!profile) {
     redirect('/login');
@@ -28,21 +28,17 @@ export default async function WatchPage({ params, searchParams }: Props) {
   }
 
   const isTv = type === 'tv';
-  const backUrl = isTv
-    ? `/tv/${tmdbId}${season ? `?season=${season}` : ""}`
-    : `/movie/${tmdbId}`;
+  const backUrl = isTv ? `/tv/${tmdbId}${season ? `?season=${season}` : ''}` : `/movie/${tmdbId}`;
 
   const youtubeVideoId = playbackId.startsWith('youtube:')
     ? playbackId.slice('youtube:'.length)
     : playbackId.startsWith('youtube%3A')
-    ? playbackId.slice('youtube%3A'.length)
-    : null;
+      ? playbackId.slice('youtube%3A'.length)
+      : null;
 
   if (youtubeVideoId && !/^[a-zA-Z0-9_-]{11}$/.test(youtubeVideoId)) {
     redirect(backUrl);
   }
-
-
 
   // Fetch initial resume progress from watch_history
   const supabase = await createClient();
@@ -66,28 +62,28 @@ export default async function WatchPage({ params, searchParams }: Props) {
   const initialTime = watchHistory?.progress_seconds || 0;
 
   // Fetch title and poster path for metadata
-  let title = "Video";
-  let posterPath = "";
+  let title = 'Video';
+  let posterPath = '';
 
   try {
     if (isTv) {
       const show = await tmdb.tvDetails(Number(tmdbId), language);
-      title = show.name || "TV Show";
-      posterPath = show.poster_path || "";
+      title = show.name || 'TV Show';
+      posterPath = show.poster_path || '';
       if (seasonNum !== null && epNum !== null) {
         title = `${title} (S${seasonNum}:E${epNum})`;
       }
     } else {
       const movie = await tmdb.movieDetails(Number(tmdbId), language);
-      title = movie.title || "Movie";
-      posterPath = movie.poster_path || "";
+      title = movie.title || 'Movie';
+      posterPath = movie.poster_path || '';
     }
   } catch (err) {
-    console.error("Error fetching watch details:", err);
+    console.error('Error fetching watch details:', err);
   }
 
   return (
-    <div className="fixed inset-0 bg-black z-[100] flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black">
       {youtubeVideoId ? (
         <YouTubePlayerComponent
           videoId={youtubeVideoId}

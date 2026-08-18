@@ -32,7 +32,7 @@ export default async function MovieDetailPage({ params, searchParams }: Props) {
       tmdb.providers('movie', Number(id)),
     ]);
   } catch (err) {
-    console.error("Error loading movie detail:", err);
+    console.error('Error loading movie detail:', err);
     notFound();
   }
 

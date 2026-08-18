@@ -46,7 +46,7 @@ export async function updateWatchProgress({
   if (playbackId) updateFields.mux_playback_id = playbackId;
 
   const { error } = await supabase.from('watch_history').upsert(updateFields, {
-    onConflict: 'profile_id,tmdb_id,media_type,season_number,episode_number'
+    onConflict: 'profile_id,tmdb_id,media_type,season_number,episode_number',
   });
 
   if (error) throw error;

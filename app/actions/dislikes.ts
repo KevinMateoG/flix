@@ -13,7 +13,7 @@ export async function toggleDislike({
   mediaType: 'movie' | 'tv';
 }) {
   const supabase = await createClient();
-  
+
   const { data: existing } = await supabase
     .from('dislikes')
     .select('id')

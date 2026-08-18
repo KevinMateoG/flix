@@ -5,7 +5,11 @@ import { HeroSection } from '@/components/home/HeroSection';
 import { ContinueWatchingRow } from '@/components/home/ContinueWatchingRow';
 import { getContinueWatching } from '@/app/actions/watch-history';
 import { getMessages, getTmdbLanguage } from '@/lib/i18n';
-import { isDemoModeActive, getPlayableMoviesForRegion, fetchTmdbDetails } from '@/lib/region-access';
+import {
+  isDemoModeActive,
+  getPlayableMoviesForRegion,
+  fetchTmdbDetails,
+} from '@/lib/region-access';
 
 interface Props {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -28,18 +32,20 @@ export default async function HomePage({ searchParams }: Props) {
 
     if (playableContent.length === 0) {
       return (
-        <div className="flex flex-col gap-6 pb-12 px-4 md:px-12 pt-32 items-center justify-center text-center">
+        <div className="flex flex-col items-center justify-center gap-6 px-4 pt-32 pb-12 text-center md:px-12">
           <h2 className="text-display-sm text-on-background">
             No hay contenido disponible en tu región todavía
           </h2>
-          <p className="text-body-lg text-muted mt-2">Tu región actual es: <strong>{region}</strong></p>
+          <p className="text-body-lg text-muted mt-2">
+            Tu región actual es: <strong>{region}</strong>
+          </p>
         </div>
       );
     }
 
     // Fetch TMDB metadata for each playable ID (auto-detects movie vs TV)
     const tmdbItems = await Promise.all(
-      playableContent.map((item) => fetchTmdbDetails(item.tmdb_id, language))
+      playableContent.map((item) => fetchTmdbDetails(item.tmdb_id, language)),
     );
 
     const validItems = tmdbItems.filter(Boolean) as any[];
@@ -81,7 +87,8 @@ export default async function HomePage({ searchParams }: Props) {
     tmdb.topRated('movie', 1, region, language),
   ]);
 
-  const hero = trending.results?.find((r: any) => r.media_type === 'movie' && r.backdrop_path) ||
+  const hero =
+    trending.results?.find((r: any) => r.media_type === 'movie' && r.backdrop_path) ||
     trending.results?.[0];
 
   return (

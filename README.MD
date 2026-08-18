@@ -1,1 +1,1 @@
-#Primer commit FLIX
+# Frontend para la app Flix

@@ -1,5 +1,5 @@
-import * as React from "react";
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import * as React from 'react';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface CastCrewProps {
   cast: any[];
@@ -13,21 +13,21 @@ export function CastCrew({ cast, tmdb }: CastCrewProps) {
   const displayCast = cast.slice(0, 12);
 
   return (
-    <div className="px-4 md:px-12 flex flex-col gap-4 border-t border-surface-bright/30 pt-6">
+    <div className="border-surface-bright/30 flex flex-col gap-4 border-t px-4 pt-6 md:px-12">
       <h3 className="text-headline-sm text-on-background">Cast</h3>
-      <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-surface-bright scrollbar-track-transparent">
+      <div className="scrollbar-thumb-surface-bright flex scrollbar-thin scrollbar-track-transparent gap-4 overflow-x-auto pb-4">
         {displayCast.map((actor) => {
-          const avatarUrl = tmdb.image(actor.profile_path, "w185");
+          const avatarUrl = tmdb.image(actor.profile_path, 'w185');
 
           return (
             <div
               key={actor.id || actor.cast_id}
-              className="w-[100px] md:w-[120px] shrink-0 flex flex-col gap-2 text-center"
+              className="flex w-[100px] shrink-0 flex-col gap-2 text-center md:w-[120px]"
             >
               {/* Profile Image */}
-              <div className="relative aspect-square w-full overflow-hidden rounded-full border border-surface-bright/40 bg-surface-container shadow-md">
+              <div className="border-surface-bright/40 bg-surface-container relative aspect-square w-full overflow-hidden rounded-full border shadow-md">
                 <ImageWithFallback
-                  src={avatarUrl || ""}
+                  src={avatarUrl || ''}
                   alt={actor.name}
                   fill
                   className="object-cover"
@@ -37,12 +37,8 @@ export function CastCrew({ cast, tmdb }: CastCrewProps) {
 
               {/* Name */}
               <div className="flex flex-col">
-                <p className="text-xs font-semibold text-on-background truncate">
-                  {actor.name}
-                </p>
-                <p className="text-[10px] text-muted truncate mt-0.5">
-                  {actor.character}
-                </p>
+                <p className="text-on-background truncate text-xs font-semibold">{actor.name}</p>
+                <p className="text-muted mt-0.5 truncate text-[10px]">{actor.character}</p>
               </div>
             </div>
           );

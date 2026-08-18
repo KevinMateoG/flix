@@ -46,9 +46,10 @@ export function MuxPlayerComponent({
     const resumePlayback = () => {
       if (initialTime <= 0 || hasResumedRef.current) return;
       const duration = Number(player.duration);
-      player.currentTime = Number.isFinite(duration) && duration > 0
-        ? Math.min(initialTime, Math.max(0, duration - 1))
-        : initialTime;
+      player.currentTime =
+        Number.isFinite(duration) && duration > 0
+          ? Math.min(initialTime, Math.max(0, duration - 1))
+          : initialTime;
       hasResumedRef.current = true;
     };
 
@@ -110,19 +111,32 @@ export function MuxPlayerComponent({
         player.removeEventListener('loadedmetadata', resumePlayback);
       }
     };
-  }, [profileId, tmdbId, mediaType, title, posterPath, playbackId, seasonNumber, episodeNumber, initialTime, onEnded]);
+  }, [
+    profileId,
+    tmdbId,
+    mediaType,
+    title,
+    posterPath,
+    playbackId,
+    seasonNumber,
+    episodeNumber,
+    initialTime,
+    onEnded,
+  ]);
 
   return (
-    <div className="relative w-full h-full group bg-black">
+    <div className="group relative h-full w-full bg-black">
       {/* Top back button visible on hover */}
-      <div className="absolute top-0 left-0 right-0 z-50 p-6 bg-gradient-to-b from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-4">
+      <div className="absolute top-0 right-0 left-0 z-50 flex items-center gap-4 bg-gradient-to-b from-black/80 to-transparent p-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         <Link href={backUrl} className="text-on-background hover:text-primary transition-colors">
           <ArrowLeft size={32} />
         </Link>
         <div>
-          <h2 className="text-headline-sm font-semibold text-on-background">{title}</h2>
-          {(seasonNumber !== undefined && episodeNumber !== undefined) && (
-            <p className="text-label-caps text-muted">S{seasonNumber}:E{episodeNumber}</p>
+          <h2 className="text-headline-sm text-on-background font-semibold">{title}</h2>
+          {seasonNumber !== undefined && episodeNumber !== undefined && (
+            <p className="text-label-caps text-muted">
+              S{seasonNumber}:E{episodeNumber}
+            </p>
           )}
         </div>
       </div>
@@ -141,7 +155,7 @@ export function MuxPlayerComponent({
         }}
         streamType="on-demand"
         autoPlay
-        className="w-full h-full object-contain"
+        className="h-full w-full object-contain"
         style={{ width: '100%', height: '100%' }}
       />
     </div>
