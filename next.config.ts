@@ -10,6 +10,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.BACKEND || 'http://localhost:3000'}/api/:path*`,
+      },
+    ];
+  },
+  allowedDevOrigins: ['10.33.21.171', 'localhost'],
 };
 
 export default nextConfig;

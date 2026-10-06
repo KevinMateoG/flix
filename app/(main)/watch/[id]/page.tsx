@@ -1,7 +1,7 @@
 import { getActiveProfile } from '@/lib/auth';
 import { MuxPlayerComponent } from '@/components/player/MuxPlayer';
 import { YouTubePlayerComponent } from '@/components/player/YouTubePlayer';
-import { createClient } from '@/lib/supabase/server';
+import { fetchApi } from '@/lib/api';
 import { tmdb } from '@/lib/tmdb';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -41,25 +41,21 @@ export default async function WatchPage({ params, searchParams }: Props) {
   }
 
   // Fetch initial resume progress from watch_history
-  const supabase = await createClient();
-  const seasonNum = season ? Number(season) : null;
-  const epNum = episode ? Number(episode) : null;
+  const seasonNum = season ? Number(season) : 0;
+  const epNum = episode ? Number(episode) : 0;
 
-  let query = supabase
-    .from('watch_history')
-    .select('progress_seconds')
-    .eq('profile_id', profile.id)
-    .eq('tmdb_id', Number(tmdbId))
-    .eq('media_type', type);
-
-  if (isTv) {
-    query = query.eq('season_number', seasonNum).eq('episode_number', epNum);
-  } else {
-    query = query.eq('season_number', 0).eq('episode_number', 0);
+  let initialTime = 0;
+  try {
+    const history = await fetchApi(`/api/watch-history/${tmdbId}/season/${seasonNum}`);
+    if (history && Array.isArray(history)) {
+      const match = history.find((row: any) => row.episodeNumber === epNum);
+      if (match) {
+        initialTime = match.progressSeconds || 0;
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching initial watch progress:', err);
   }
-
-  const { data: watchHistory } = await query.maybeSingle();
-  const initialTime = watchHistory?.progress_seconds || 0;
 
   // Fetch title and poster path for metadata
   let title = 'Video';

@@ -41,7 +41,7 @@ export default async function BrowsePage({ searchParams }: Props) {
       const playableContent = await getPlayableMoviesForRegion(region);
 
       const tmdbItems = await Promise.all(
-        playableContent.map((item) => fetchTmdbDetails(item.tmdb_id, language)),
+        playableContent.map((item) => fetchTmdbDetails(item.tmdbId, language)),
       );
 
       const validItems = tmdbItems.filter(Boolean);

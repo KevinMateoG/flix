@@ -22,13 +22,13 @@ export default async function MyListPage() {
 
   // Fetch TMDB details for each saved item in parallel
   const detailedItems = await Promise.all(
-    listItems.map(async (item) => {
+    listItems.map(async (item: any) => {
       try {
         let details;
-        if (item.media_type === 'tv') {
-          details = await tmdb.tvDetails(item.tmdb_id, language);
+        if (item.mediaType === 'tv') {
+          details = await tmdb.tvDetails(item.tmdbId, language);
         } else {
-          details = await tmdb.movieDetails(item.tmdb_id, language);
+          details = await tmdb.movieDetails(item.tmdbId, language);
         }
         return {
           ...item,
@@ -39,7 +39,7 @@ export default async function MyListPage() {
           overview: details.overview,
         };
       } catch (err) {
-        console.error(`Error loading TMDB details for watchlist item ${item.tmdb_id}:`, err);
+        console.error(`Error loading TMDB details for watchlist item ${item.tmdbId}:`, err);
         return null;
       }
     }),
@@ -61,7 +61,7 @@ export default async function MyListPage() {
       ) : (
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-2">
           {validItems.map((item: any) => {
-            const href = `/${item.media_type}/${item.tmdb_id}`;
+            const href = `/${item.mediaType}/${item.tmdbId}`;
             const year = item.release_date
               ? new Date(item.release_date).getFullYear().toString()
               : '';

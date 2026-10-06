@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { createClient } from '@/lib/supabase/client';
+import { authClient } from '@/lib/auth-client';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -17,13 +17,14 @@ export default function ForgotPasswordPage() {
     setError(null);
     setSuccess(false);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    // @ts-ignore - plugin method not fully typed in client
+    const { error } = await authClient.forgetPassword({
+      email,
       redirectTo: `${window.location.origin}/reset-password`,
     });
 
     if (error) {
-      setError(error.message);
+      setError(error.message || 'An error occurred');
     } else {
       setSuccess(true);
     }

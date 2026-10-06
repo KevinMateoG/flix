@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { createClient } from '@/lib/supabase/client';
+import { authClient } from '@/lib/auth-client';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -12,32 +12,6 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sessionReady, setSessionReady] = useState(false);
-  const [sessionError, setSessionError] = useState(false);
-
-  useEffect(() => {
-    const supabase = createClient();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && session)) {
-        setSessionReady(true);
-      }
-    });
-
-    const timeout = setTimeout(() => {
-      setSessionReady((prev) => {
-        if (!prev) setSessionError(true);
-        return prev;
-      });
-    }, 3000);
-
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
-    };
-  }, []);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,20 +30,15 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.updateUser({ password });
+    const { error } = await authClient.resetPassword({ newPassword: password });
 
     if (error) {
-      setError(
-        error.message.toLowerCase().includes('same password')
-          ? 'New password must be different from your current one.'
-          : error.message,
-      );
+      setError(error.message || 'An error occurred');
       setLoading(false);
       return;
     }
 
-    await supabase.auth.signOut({ scope: 'others' });
+    await authClient.signOut();
     router.push('/home');
     router.refresh();
   };
@@ -116,52 +85,7 @@ export default function ResetPasswordPage() {
             </p>
           </div>
 
-          {/* Invalid / expired link */}
-          {sessionError && (
-            <div className="bg-error/10 border-error/20 flex flex-col items-center gap-4 rounded-xl border p-6 text-center">
-              <div className="bg-error/20 flex h-12 w-12 items-center justify-center rounded-full">
-                <svg
-                  className="text-error h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-headline-sm text-on-surface mb-1 font-semibold">
-                  Link expired or invalid
-                </h3>
-                <p className="text-body-sm text-muted">
-                  This reset link has expired or already been used. Please request a new one.
-                </p>
-              </div>
-              <Link
-                href="/forgot-password"
-                className="bg-primary text-body-sm text-on-primary hover:bg-primary/90 mt-2 inline-flex h-10 w-full items-center justify-center rounded px-4 font-semibold transition-colors"
-              >
-                Request New Link
-              </Link>
-            </div>
-          )}
-
-          {/* Verifying session */}
-          {!sessionReady && !sessionError && (
-            <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <div className="border-surface-bright border-t-primary h-8 w-8 animate-spin rounded-full border-2" />
-              <p className="text-body-sm text-muted">Verifying reset link...</p>
-            </div>
-          )}
-
           {/* Password form */}
-          {sessionReady && !sessionError && (
-            <>
               {error && (
                 <div className="bg-error/10 text-body-sm text-error border-error/20 mb-4 rounded border p-3">
                   {error}
@@ -206,8 +130,6 @@ export default function ResetPasswordPage() {
                   {loading ? 'Updating password...' : 'Update Password'}
                 </Button>
               </form>
-            </>
-          )}
 
           <div className="mt-6 text-center">
             <Link href="/login" className="text-body-sm text-primary hover:underline">

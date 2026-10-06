@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { createClient } from '@/lib/supabase/client';
+import { authClient } from '@/lib/auth-client';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -39,51 +39,16 @@ export default function RegisterPage() {
       return;
     }
 
-    const supabase = createClient();
-
-    // 1. Sign up the user
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    const { error: authError } = await authClient.signUp.email({
       email,
       password,
-      options: {
-        data: { display_name: name },
-      },
+      name: name.trim(),
     });
 
     if (authError) {
-      const msg = authError.message.toLowerCase();
-      if (msg.includes('already registered')) {
-        setError('This email is already registered. Try signing in instead.');
-      } else if (msg.includes('rate limit') || msg.includes('email rate')) {
-        setError('Too many sign-up attempts. Please wait a few minutes and try again.');
-      } else {
-        setError(authError.message);
-      }
+      setError(authError.message || 'An error occurred');
       setLoading(false);
       return;
-    }
-
-    // When Supabase "Confirm email" is ON, a duplicate email returns user: null, error: null
-    // (Supabase silently sends a new confirmation email instead of exposing the duplicate)
-    if (!authData.user) {
-      setError('This email is already registered. Please check your inbox or try signing in.');
-      setLoading(false);
-      return;
-    }
-
-    // 2. Create the profile row
-    const { error: profileError } = await supabase.from('profiles').insert([
-      {
-        id: authData.user.id,
-        display_name: name.trim(),
-      },
-    ]);
-
-    if (profileError) {
-      // Ignore unique constraint violation (profile already exists from a previous attempt)
-      if (!profileError.code?.includes('23505')) {
-        console.error('Error creating profile:', profileError);
-      }
     }
 
     // Success — redirect to home

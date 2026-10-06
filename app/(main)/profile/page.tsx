@@ -2,15 +2,14 @@ import { redirect } from 'next/navigation';
 import { User, Settings, CreditCard, LogOut, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getUser, getProfile } from '@/lib/auth';
-import { createClient } from '@/lib/supabase/server';
+import { fetchApi } from '@/lib/api';
 import { updateProfileRegion } from '@/app/actions/profile';
 import { revalidatePath } from 'next/cache';
 import Link from 'next/link';
 
 async function signOut() {
   'use server';
-  const supabase = await createClient();
-  await supabase.auth.signOut();
+  await fetchApi('/api/auth/sign-out', { method: 'POST' });
   redirect('/login');
 }
 

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { createClient } from '@/lib/supabase/client';
+import { authClient } from '@/lib/auth-client';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,24 +18,13 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await authClient.signIn.email({
       email: email.trim(),
       password,
     });
 
     if (error) {
-      // Map Supabase technical messages to readable ones
-      const msg = error.message.toLowerCase();
-      if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
-        setError('Incorrect email or password. Please try again.');
-      } else if (msg.includes('email not confirmed')) {
-        setError('Please verify your email address before signing in. Check your inbox.');
-      } else if (msg.includes('too many requests')) {
-        setError('Too many attempts. Please wait a moment and try again.');
-      } else {
-        setError(error.message);
-      }
+      setError(error.message || 'An error occurred');
       setLoading(false);
       return;
     }
@@ -45,12 +34,9 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
-    const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
+    await authClient.signIn.social({
       provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+      callbackURL: `${window.location.origin}/home`,
     });
   };
 

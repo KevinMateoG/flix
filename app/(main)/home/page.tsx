@@ -45,7 +45,7 @@ export default async function HomePage({ searchParams }: Props) {
 
     // Fetch TMDB metadata for each playable ID (auto-detects movie vs TV)
     const tmdbItems = await Promise.all(
-      playableContent.map((item) => fetchTmdbDetails(item.tmdb_id, language)),
+      playableContent.map((item) => fetchTmdbDetails(item.tmdbId, language)),
     );
 
     const validItems = tmdbItems.filter(Boolean) as any[];
