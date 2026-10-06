@@ -1,27 +1,27 @@
 'use server';
-import { createClient } from '@/lib/supabase/server';
+import { fetchApi } from '@/lib/api';
 import { cookies } from 'next/headers';
 import { normalizeLocale } from '@/lib/i18n';
 
 export async function updateProfileRegion(region: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  try {
+    await fetchApi('/api/profile/region', {
+      method: 'POST',
+      body: JSON.stringify({ region }),
+    });
 
-  const { error } = await supabase.from('profiles').update({ region }).eq('id', user.id);
+    const cookieStore = await cookies();
+    cookieStore.set('user_region', region, {
+      path: '/',
+      maxAge: 2592000,
+      sameSite: 'lax',
+    });
 
-  if (error) throw error;
-
-  const cookieStore = await cookies();
-  cookieStore.set('user_region', region, {
-    path: '/',
-    maxAge: 2592000,
-    sameSite: 'lax',
-  });
-
-  return { success: true };
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating profile region:', error);
+    throw error;
+  }
 }
 
 export async function updateProfileSettings({
@@ -33,32 +33,29 @@ export async function updateProfileSettings({
   maturityRating?: string;
   isKids?: boolean;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  try {
+    const fields: any = {};
+    if (language !== undefined) fields.language = normalizeLocale(language);
+    if (maturityRating !== undefined) fields.maturityRating = maturityRating;
+    if (isKids !== undefined) fields.isKids = isKids;
 
-  const updateFields: any = {};
-  if (language !== undefined) updateFields.language = normalizeLocale(language);
-  if (maturityRating !== undefined) updateFields.maturity_rating = maturityRating;
-  if (isKids !== undefined) updateFields.is_kids = isKids;
+    await fetchApi('/api/profile/settings', {
+      method: 'POST',
+      body: JSON.stringify(fields),
+    });
 
-  const { error } = await supabase.from('profiles').update(updateFields).eq('id', user.id);
-
-  if (error) throw error;
-  return { success: true };
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating profile settings:', error);
+    throw error;
+  }
 }
 
 export async function getActiveProfile() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-
-  if (error || !data) return null;
-  return data;
+  try {
+    const profile = await fetchApi('/api/profile');
+    return profile || null;
+  } catch (error) {
+    return null;
+  }
 }

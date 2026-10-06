@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Play } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import Link from 'next/link';
 import { buildWatchUrl } from '@/lib/playback';
+import { fetchApi } from '@/lib/api';
 
 interface EpisodeListProps {
   episodes: any[];
@@ -31,19 +31,13 @@ export async function EpisodeList({
 
   if (profileId) {
     try {
-      const supabase = await createClient();
-      const { data: history } = await supabase
-        .from('watch_history')
-        .select('episode_number, progress_seconds, duration_seconds')
-        .eq('profile_id', profileId)
-        .eq('tmdb_id', tmdbId)
-        .eq('season_number', seasonNumber);
+      const history = await fetchApi(`/api/watch-history/${tmdbId}/season/${seasonNumber}`);
 
-      if (history) {
+      if (history && Array.isArray(history)) {
         history.forEach((row: any) => {
-          if (row.duration_seconds > 0) {
-            watchProgressMap[row.episode_number] = Math.floor(
-              (row.progress_seconds / row.duration_seconds) * 100,
+          if (row.durationSeconds > 0) {
+            watchProgressMap[row.episodeNumber] = Math.floor(
+              (row.progressSeconds / row.durationSeconds) * 100,
             );
           }
         });
@@ -143,3 +137,4 @@ export async function EpisodeList({
     </div>
   );
 }
+

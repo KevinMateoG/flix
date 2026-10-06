@@ -1,10 +1,8 @@
 'use server';
-import { createClient } from '@/lib/supabase/server';
-import { getActiveProfile } from '@/lib/auth';
+import { fetchApi } from '@/lib/api';
 import { revalidatePath } from 'next/cache';
 
 export async function toggleDislike({
-  profileId,
   tmdbId,
   mediaType,
 }: {
@@ -12,33 +10,19 @@ export async function toggleDislike({
   tmdbId: number;
   mediaType: 'movie' | 'tv';
 }) {
-  const supabase = await createClient();
-
-  const { data: existing } = await supabase
-    .from('dislikes')
-    .select('id')
-    .eq('profile_id', profileId)
-    .eq('tmdb_id', tmdbId)
-    .eq('media_type', mediaType)
-    .maybeSingle();
-
-  if (existing) {
-    const { error } = await supabase.from('dislikes').delete().eq('id', existing.id);
-    if (error) throw error;
-    return { added: false };
-  } else {
-    const { error } = await supabase.from('dislikes').insert({
-      profile_id: profileId,
-      tmdb_id: tmdbId,
-      media_type: mediaType,
+  try {
+    const data = await fetchApi('/api/dislikes/toggle', {
+      method: 'POST',
+      body: JSON.stringify({ tmdbId, mediaType }),
     });
-    if (error) throw error;
-    return { added: true };
+    return data || { added: false };
+  } catch (error) {
+    console.error('Error toggling dislike:', error);
+    throw error;
   }
 }
 
 export async function checkIfDisliked({
-  profileId,
   tmdbId,
   mediaType,
 }: {
@@ -46,15 +30,12 @@ export async function checkIfDisliked({
   tmdbId: number;
   mediaType: 'movie' | 'tv';
 }) {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('dislikes')
-    .select('id')
-    .eq('profile_id', profileId)
-    .eq('tmdb_id', tmdbId)
-    .eq('media_type', mediaType)
-    .maybeSingle();
-
-  if (error) return false;
-  return !!data;
+  try {
+    const data = await fetchApi(`/api/dislikes/check?tmdbId=${tmdbId}&mediaType=${mediaType}`);
+    return data?.disliked || false;
+  } catch (error) {
+    console.error('Error checking dislike:', error);
+    return false;
+  }
 }
+

@@ -7,7 +7,7 @@ import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { removeFromMyList } from '@/app/actions/my-list';
 
 interface MyListCardProps {
-  id: string;
+  id: number;
   href: string;
   title: string;
   metadata: string;

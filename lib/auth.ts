@@ -1,19 +1,9 @@
-import { createClient } from '@/lib/supabase/server';
-import { User } from '@supabase/supabase-js';
+import { fetchApi } from './api';
 
-export async function getUser(): Promise<User | null> {
+export async function getUser(): Promise<any | null> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-
-    if (error || !user) {
-      return null;
-    }
-
-    return user;
+    const data = await fetchApi('/api/auth/get-session');
+    return data?.user || null;
   } catch (error) {
     console.error('Error fetching user:', error);
     return null;
@@ -21,34 +11,16 @@ export async function getUser(): Promise<User | null> {
 }
 
 export async function getProfile(userId: string) {
-  try {
-    const supabase = await createClient();
-    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
-
-    if (error) {
-      console.error('Error fetching profile:', error);
-      return null;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-    return null;
-  }
+  // Since we only exposed /api/profile/me, we assume the requested profile is the active one,
+  // or we need to add a generic profile fetching endpoint if really needed.
+  // For the current usage, getActiveProfile handles what we need.
+  return getActiveProfile();
 }
 
 export async function getActiveProfile() {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return null;
-
-    const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-
-    if (error || !data) return null;
-    return data;
+    const profile = await fetchApi('/api/profile/me');
+    return profile || null;
   } catch (error) {
     console.error('Error fetching active profile:', error);
     return null;
