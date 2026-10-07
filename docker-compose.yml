@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: flix-db
+    environment:
+      POSTGRES_USER: flix
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flix_password}
+      POSTGRES_DB: flix
+    ports:
+      - "5432:5432"
+    volumes:
+      - flix-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flix -d flix"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - flix-net
+    restart: unless-stopped
+
+  backend:
+    image: kevinmateog/flix-backend:latest
+    container_name: flix-backend
+    ports:
+      - "4000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      DATABASE_URL: postgresql://flix:${POSTGRES_PASSWORD:-flix_password}@host.docker.internal:5432/flix
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-cambia-este-secreto-por-uno-largo-y-aleatorio}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - flix-net
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BACKEND: http://localhost:4000
+    container_name: flix-frontend
+    network_mode: host
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      BACKEND: http://localhost:4000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  flix-net:
+    driver: bridge
+
+volumes:
+  flix-db-data:
