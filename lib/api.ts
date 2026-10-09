@@ -16,6 +16,9 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   if (!headers.has('Content-Type') && options.body) {
     headers.set('Content-Type', 'application/json');
   }
+  if (!headers.has('Origin')) {
+    headers.set('Origin', process.env.NEXT_PUBLIC_URL || 'http://localhost:5173');
+  }
 
   const res = await fetch(`${BACKEND_URL}${endpoint}`, {
     ...options,
