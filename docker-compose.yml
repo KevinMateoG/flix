@@ -1,17 +1,17 @@
 services:
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        BACKEND: http://localhost:3000
-        NEXT_PUBLIC_URL: http://localhost:5173
+    image: "kevinmateog/flix-frontend"
     container_name: flix-frontend
-    network_mode: host
+    ports:
+      - "${PORT:-5173}:5173"
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       NODE_ENV: production
       PORT: "5173"
       HOSTNAME: 0.0.0.0
-      BACKEND: http://localhost:3000
+      BACKEND: http://host.docker.internal:3000
       NEXT_PUBLIC_URL: http://localhost:5173
     restart: unless-stopped

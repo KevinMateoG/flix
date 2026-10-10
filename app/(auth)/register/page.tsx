@@ -53,7 +53,6 @@ export default function RegisterPage() {
 
     // Success — redirect to home
     router.push('/home');
-    router.refresh();
   };
 
   return (

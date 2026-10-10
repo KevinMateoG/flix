@@ -9,7 +9,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ARG BACKEND=http://localhost:3000
+ARG BACKEND=http://host.docker.internal:3000
 ARG NEXT_PUBLIC_URL=http://localhost:5173
 ENV BACKEND=$BACKEND
 ENV NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL

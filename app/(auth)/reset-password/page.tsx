@@ -40,7 +40,6 @@ export default function ResetPasswordPage() {
 
     await authClient.signOut();
     router.push('/home');
-    router.refresh();
   };
 
   return (
