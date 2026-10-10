@@ -1,0 +1,71 @@
+name: flix-dev
+
+services:
+  backend:
+    image: "kevinmateog/flix-backend"
+    container_name: "flix-backend"
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    env_file:
+      - ../flix-backend/.env
+    environment:
+      PORT: "3000"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-flix_user}:${POSTGRES_PASSWORD:-flix_1234_}@db:5432/${POSTGRES_DB:-flix}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      BETTER_AUTH_TRUSTED_ORIGINS: ${BETTER_AUTH_TRUSTED_ORIGINS:-http://localhost:5173,http://localhost:3000}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-flix}
+      POSTGRES_USER: ${POSTGRES_USER:-flix_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flix_1234_}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    image: "kevinmateog/flix-frontend"
+    container_name: flix-frontend
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    env_file:
+      - ../flix-frontend/.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      NODE_ENV: production
+      PORT: "5173"
+      HOSTNAME: 0.0.0.0
+      BACKEND: http://host.docker.internal:3000
+      NEXT_PUBLIC_URL: http://localhost:5173
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
